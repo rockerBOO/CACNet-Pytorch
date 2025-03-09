@@ -50,7 +50,7 @@ def preprocess_image(image, keep_aspect_ratio):
         h = cfg.image_size[1]
         w = cfg.image_size[0]
 
-    resized_image = image.resize((w, h), Image.ANTIALIAS)
+    resized_image = image.resize((w, h), Image.Resampling.LANCZOS)
 
     if random.uniform(0, 1) > 0.5:
         resized_image = ImageOps.mirror(resized_image)
@@ -92,6 +92,6 @@ if __name__ == '__main__':
     args = parse_arguments()
     device = torch.device(f'cuda:{args.gpu}' if torch.cuda.is_available() else 'cpu') 
     model  = CACNet(loadweights=False)
-    model.load_state_dict(torch.load(args.weight))
+    model.load_state_dict(torch.load(args.weight, map_location=torch.device("cpu")))
     model = model.to(device).eval()
     evaluate_on_images(model, args.input, args.output)
